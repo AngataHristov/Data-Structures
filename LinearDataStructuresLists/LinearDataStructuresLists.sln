@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "06.ReversedList", "Reversed
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "08.CustomList", "CustomList\08.CustomList.csproj", "{805E6DF8-64CE-4FBE-A4D4-8067A0E1C0D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistanceInLabyrinth", "DistanceInLabyrinth\DistanceInLabyrinth.csproj", "{1C7B7856-4451-4668-B07F-983652FB306D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReversedList.Tests", "ReversedList.Tests\ReversedList.Tests.csproj", "{77224D34-6264-4E28-AF0C-27138B889C28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{805E6DF8-64CE-4FBE-A4D4-8067A0E1C0D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{805E6DF8-64CE-4FBE-A4D4-8067A0E1C0D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{805E6DF8-64CE-4FBE-A4D4-8067A0E1C0D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C7B7856-4451-4668-B07F-983652FB306D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C7B7856-4451-4668-B07F-983652FB306D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C7B7856-4451-4668-B07F-983652FB306D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C7B7856-4451-4668-B07F-983652FB306D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77224D34-6264-4E28-AF0C-27138B889C28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77224D34-6264-4E28-AF0C-27138B889C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77224D34-6264-4E28-AF0C-27138B889C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77224D34-6264-4E28-AF0C-27138B889C28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

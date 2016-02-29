@@ -3,9 +3,9 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
+    using Interfaces;
 
-    public class MyReversedList<T> : IList<T>
+    public class MyReversedList<T> : IReversedList<T>
     {
         private const int DefaultSize = 16;
 
@@ -14,11 +14,10 @@
         public MyReversedList(int size = DefaultSize)
         {
             this.elements = new T[size];
+            this.Count = 0;
         }
 
         public int Count { get; private set; }
-
-        public bool IsReadOnly { get; }
 
         public int Capacity
         {
@@ -32,22 +31,12 @@
         {
             get
             {
-                if (index < 0 || index > this.elements.Length)
-                {
-                    throw new IndexOutOfRangeException("Invalid index: " + index);
-                }
-
-                return this.elements[index];
+                return this.GetAtIndex(index);
             }
 
             set
             {
-                if (index < 0 || index > this.elements.Length)
-                {
-                    throw new IndexOutOfRangeException("Invalid index: " + index);
-                }
-
-                this.elements[this.Count - index - 1] = value;
+                this.SetAtIndex(index, value);
             }
         }
 
@@ -142,26 +131,26 @@
 
         public void RemoveAt(int index)
         {
-            if (index > this.Count)
-            {
-                throw new IndexOutOfRangeException(String.Format("No element with index: {0}", index));
-            }
+            this.CheckIfIndexIsInRange(index);
 
-            for (int i = index; i < this.Count; i++)
+            index = this.ReverseIndex(index);
+
+            for (int i = index; i < this.Count - 1; i++)
             {
                 this.elements[i] = this.elements[i + 1];
             }
 
-            this.Count++;
+            this.elements[this.Count - 1] = default(T);
+            this.Count--;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            int index = 0;
-            while (index < this.Count)
+            int index = this.Count-1;
+            while (index >= 0)
             {
                 yield return this.elements[index];
-                index++;
+                index--;
             }
         }
 
@@ -170,13 +159,74 @@
             return this.GetEnumerator();
         }
 
+        public override string ToString()
+        {
+            var result = string.Format($"[{string.Join(", ", this.elements)}]");
+
+            return result;
+        }
+
         private void DoubleCapacity()
         {
             T[] dobledElements = new T[this.Capacity * 2];
 
-            Array.Copy(this.elements, dobledElements, this.Capacity);
+            for (int i = dobledElements.Length - 1; i >= this.Count; i--)
+            {
+                dobledElements[i] = this.elements[i - this.elements.Length];
+            }
 
             this.elements = dobledElements;
+        }
+
+        private T GetAtIndex(int index)
+        {
+            this.CheckIfIndexIsInRange(index);
+
+            index = this.ReverseIndex(index);
+
+            var element = this.elements[index];
+
+            return element;
+        }
+
+        private int ReverseIndex(int index)
+        {
+            var reversedIndex = this.Count - 1 - index;
+
+            return reversedIndex;
+        }
+
+        private void SetAtIndex(int index, T element)
+        {
+            this.CheckIfIndexIsInRange(index);
+
+            this.ResizeIfNeeded();
+
+            index = this.ReverseIndex(index) + 1;
+
+            for (int i = this.Count; i >= index; i--)
+            {
+                this.elements[i] = this.elements[i - 1];
+            }
+
+            this.elements[index] = element;
+            this.Count++;
+        }
+
+        private void CheckIfIndexIsInRange(int index)
+        {
+            if (index < 0 || index >= this.Count)
+            {
+                throw new IndexOutOfRangeException("Index is out of range");
+            }
+        }
+
+        private void ResizeIfNeeded()
+        {
+            if (this.Count >= this.Capacity - 1)
+            {
+                this.DoubleCapacity();
+            }
         }
     }
 }
