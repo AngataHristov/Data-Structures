@@ -59,12 +59,27 @@ namespace BiDictionaryImplementation
 
         public IEnumerable<T> FindByKey1(K1 key1)
         {
-            return this.valuesByFirstKey[key1];
+            var result = this.valuesByFirstKey.Keys
+                .FirstOrDefault(k => k.Equals(key1));
 
+            if (result == null)
+            {
+                return new List<T>();
+            }
+
+            return this.valuesByFirstKey[key1];
         }
 
         public IEnumerable<T> FindByKey2(K2 key2)
         {
+            var result = this.valuesBySecondKey.Keys
+                .FirstOrDefault(k => k.Equals(key2));
+
+            if (result == null)
+            {
+                return new List<T>();
+            }
+
             return this.valuesBySecondKey[key2];
         }
 
@@ -78,10 +93,6 @@ namespace BiDictionaryImplementation
             foreach (T value in values)
             {
                 this.valuesByFirstKey[key1].Remove(value);
-            }
-
-            foreach (T value in values)
-            {
                 this.valuesBySecondKey[key2].Remove(value);
             }
 
