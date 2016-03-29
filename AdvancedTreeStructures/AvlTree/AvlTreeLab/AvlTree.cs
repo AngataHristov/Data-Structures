@@ -1,7 +1,6 @@
 ﻿namespace AvlTreeLab
 {
     using System;
-    using System.Linq;
 
     public class AvlTree<T> where T : IComparable<T>
     {
@@ -9,9 +8,25 @@
 
         public int Count { get; private set; }
 
+        public Node<T> Root
+        {
+            get
+            {
+                return this.root;
+            }
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                return this.GetElementAtIndex(index);
+            }
+        }
+
         public void Add(T item)
         {
-            bool inserted = true;
+            var inserted = true;
             if (this.root == null)
             {
                 this.root = new Node<T>(item);
@@ -32,18 +47,17 @@
             var node = this.root;
             while (node != null)
             {
-                if (item.CompareTo(node.Value) == 0)
-                {
-                    return true;
-                }
-
-                if (item.CompareTo(node.Value) > 0)
+                if (node.Value.CompareTo(item) < 0)
                 {
                     node = node.RightChild;
                 }
-                else
+                else if (node.Value.CompareTo(item) > 0)
                 {
                     node = node.LeftChild;
+                }
+                else
+                {
+                    return true;
                 }
             }
 
@@ -64,8 +78,8 @@
         {
             var currentNode = node;
             var newNode = new Node<T>(item);
-            var shouldRetrace = false;
 
+            // var shouldRetrace = false;
             while (true)
             {
                 if (currentNode.Value.CompareTo(item) < 0)
@@ -73,92 +87,99 @@
                     if (currentNode.RightChild == null)
                     {
                         currentNode.RightChild = newNode;
-                        currentNode.BalanceFactor--;
-                        shouldRetrace = currentNode.BalanceFactor != 0;
+                        currentNode.BallanceFactor--;
+
+                        // shouldRetrace = currentNode.BallanceFactor != 0;
                         break;
                     }
 
                     currentNode = currentNode.RightChild;
                 }
-                else
+                else if (currentNode.Value.CompareTo(item) > 0)
                 {
                     if (currentNode.LeftChild == null)
                     {
                         currentNode.LeftChild = newNode;
-                        currentNode.BalanceFactor++;
-                        shouldRetrace = currentNode.BalanceFactor != 0;
+                        currentNode.BallanceFactor++;
 
+                        // shouldRetrace = currentNode.BallanceFactor != 0;
                         break;
                     }
 
                     currentNode = currentNode.LeftChild;
                 }
-
-                break;
+                else
+                {
+                    return false;
+                }
             }
 
-            if (shouldRetrace)
-            {
-                this.RetraceInsert(currentNode);
-            }
+            // if (shouldRetrace)
+            // {
+            this.RetraceInsert(currentNode);
 
+            // }
             return true;
         }
 
         private void RetraceInsert(Node<T> node)
         {
             var parent = node.Parent;
+            node.Count++;
+
+            while (parent != null)
+            {
+                parent.Count++;
+                parent = parent.Parent;
+            }
+
+            parent = node.Parent;
 
             while (parent != null)
             {
                 if (node.IsLeftChild)
                 {
-                    if (parent.BalanceFactor == 1)
+                    if (parent.BallanceFactor == 1)
                     {
-                        parent.BalanceFactor++;
-                        if (node.BalanceFactor == -1)
+                        parent.BallanceFactor++;
+                        if (node.BallanceFactor == -1)
                         {
-                            this.RotateLeft(parent);
+                            this.RotateLeft(node);
                         }
 
                         this.RotateRight(parent);
-                    }
-                    else if (parent.BalanceFactor == -1)
-                    {
-                        parent.BalanceFactor = 0;
-                        break;
-                    }
-                    else
-                    {
-                        parent.BalanceFactor = 1;
                         break;
                     }
 
-                    node = parent;
-                    parent = node.Parent;
+                    if (parent.BallanceFactor == -1)
+                    {
+                        parent.BallanceFactor = 0;
+                        break;
+                    }
+
+                    parent.BallanceFactor = 1;
                 }
                 else
                 {
-                    if (parent.BalanceFactor == -1)
+                    if (parent.BallanceFactor == -1)
                     {
-                        parent.BalanceFactor--;
-                        if (node.BalanceFactor == 1)
+                        parent.BallanceFactor--;
+                        if (node.BallanceFactor == 1)
                         {
-                            this.RotateRight(parent);
+                            this.RotateRight(node);
                         }
 
                         this.RotateLeft(parent);
-                    }
-                    else if (parent.BalanceFactor == 11)
-                    {
-                        parent.BalanceFactor = 0;
                         break;
                     }
-                    else
+
+                    if (parent.BallanceFactor == 1)
                     {
-                        parent.BalanceFactor = -1;
+                        parent.BallanceFactor = 0;
                         break;
                     }
+
+                    parent.BallanceFactor = -1;
                 }
 
                 node = parent;
@@ -191,8 +212,11 @@
             node.RightChild = child.LeftChild;
             child.LeftChild = node;
 
-            node.BalanceFactor += 1 - Math.Min(child.BalanceFactor, 0);
-            child.BalanceFactor += 1 + Math.Max(node.BalanceFactor, 0);
+            node.BallanceFactor += 1 - Math.Min(child.BallanceFactor, 0);
+            child.BallanceFactor += 1 + Math.Max(node.BallanceFactor, 0);
+
+            this.ModifyRotatedNodesCount(node);
+            this.ModifyRotatedNodesCount(child);
         }
 
         private void RotateRight(Node<T> node)
@@ -220,8 +244,11 @@
             node.LeftChild = child.RightChild;
             child.RightChild = node;
 
-            node.BalanceFactor -= 1 + Math.Min(child.BalanceFactor, 0);
-            child.BalanceFactor -= 1 + Math.Max(node.BalanceFactor, 0);
+            node.BallanceFactor -= 1 + Math.Min(child.BallanceFactor, 0);
+            child.BallanceFactor -= 1 - Math.Max(node.BallanceFactor, 0);
+
+            this.ModifyRotatedNodesCount(node);
+            this.ModifyRotatedNodesCount(child);
         }
 
         private void InOrderDfs(Node<T> node, int depth, Action<int, T> action)
@@ -236,6 +263,59 @@
             if (node.RightChild != null)
             {
                 this.InOrderDfs(node.RightChild, depth + 1, action);
+            }
+        }
+
+        private void ModifyRotatedNodesCount(Node<T> node)
+        {
+            var newCount = 1;
+            if (node.LeftChild != null)
+            {
+                newCount += node.LeftChild.Count;
+            }
+
+            if (node.RightChild != null)
+            {
+                newCount += node.RightChild.Count;
+            }
+
+            node.Count = newCount;
+        }
+
+        private T GetElementAtIndex(int index)
+        {
+            if (index < 0 || index >= this.Count)
+            {
+                throw new IndexOutOfRangeException("Invalid Index");
+            }
+
+            var node = this.root;
+
+            while (true)
+            {
+                int leftSubTreeCount = 0;
+
+                if (node.LeftChild != null)
+                {
+                    leftSubTreeCount = node.LeftChild.Count;
+                }
+
+                if (index == leftSubTreeCount)
+                {
+                    return node.Value;
+                }
+
+                if (index <= leftSubTreeCount)
+                {
+                    node = node.LeftChild;
+                    continue;
+                }
+
+                if (index>leftSubTreeCount)
+                {
+                    index -= leftSubTreeCount + 1;
+                    node = node.RightChild;
+                }
             }
         }
     }

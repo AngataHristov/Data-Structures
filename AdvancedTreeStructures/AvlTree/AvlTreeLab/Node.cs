@@ -10,6 +10,7 @@
         public Node(T value)
         {
             this.Value = value;
+            this.Count = 1;
         }
 
         public T Value { get; set; }
@@ -52,7 +53,9 @@
 
         public Node<T> Parent { get; set; }
 
-        public int BalanceFactor { get; set; }
+        public int BallanceFactor { get; set; }
+
+        public int Count { get; set; }
 
         public bool IsLeftChild
         {
